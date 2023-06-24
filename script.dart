@@ -10,11 +10,18 @@ import 'dart:io';
 Map<String, FlutterWidget> findReplaceMap = {
   'B1': FlutterWidget("ElevatedButton", params: buttonCommons),
   'B2': FlutterWidget("TextButton", params: buttonCommons),
-  'Bc1': FlutterWidget("BtnLoading", params: buttonCommons),
-  'C1': FlutterWidget("Container"),
+  'Bc1': FlutterWidget("BtnLoading",
+      params: {
+        'm': const FlutterWidgetParam(
+          "margin",
+          customValues: {0: "EdgeInsets.zero"},
+        )
+      }..addAll(buttonCommons)),
+  'C1': FlutterWidget("Center"),
   'C2': FlutterWidget("Column", params: multiChildCommons),
-  'C3': FlutterWidget("Center"),
+  'C3': FlutterWidget("Container"),
   'C4': FlutterWidget("Card"),
+  'E1': FlutterWidget("Expanded"),
   'F1': FlutterWidget("Form"),
   'L1': FlutterWidget("ListView"),
   'L2': FlutterWidget("ListTile"),
@@ -45,7 +52,11 @@ Map<String, FlutterWidget> findReplaceMap = {
       6: "Theme.of(context).textTheme.bodySmall",
     }),
   }),
-  'T2': FlutterWidget("TextField"),
+  'T2': FlutterWidget("TextField", params: {
+    'd': const FlutterWidgetParam("decoration", customValues: {
+      0: "InputDecoration(border: OutlineInputBorder())",
+    })
+  }),
   'Tc1': FlutterWidget("CustomTextFieldWidget"),
 };
 
@@ -54,10 +65,14 @@ const Map<String, FlutterWidgetParam> buttonCommons = {
   'p': FlutterWidgetParam(
     "onPressed",
     customValues: {0: "null", 1: "(){}"},
-  )
+  ),
+  'l': FlutterWidgetParam(
+    "label",
+    customValues: {0: "'Tap Here'", 1: "'Continue'"},
+  ),
 };
 
-/// Itens comuns aos widget que tem altura e largura 
+/// Itens comuns aos widget que tem altura e largura
 const Map<String, FlutterWidgetParam> boxCommons = {
   'h': FlutterWidgetParam('height'),
   'w': FlutterWidgetParam('width'),
@@ -86,6 +101,7 @@ const Map<String, FlutterWidgetParam> multiChildCommons = {
 class FlutterWidget {
   /// Widget a ser usado (e.g SizedBox)
   final String widget;
+
   /// Parametros utilizados (e.g {"h" : "height"})
   final Map<String, FlutterWidgetParam>? params;
 
@@ -99,6 +115,7 @@ class FlutterWidget {
 class FlutterWidgetParam {
   /// Nome do parametro (e.g onPressed)
   final String param;
+
   /// Valores customizados pre-definidos do parametro.
   /// Quando não definido, o valor numérico digitado após o short-param (e.g "w" ou "h")
   /// será o valor exatamente como digitado
@@ -123,7 +140,7 @@ void main(List<String> arguments) async {
   var code = await file.readAsString();
 
   code = formatScript(code);
-  
+
   // Write the file
   await file.writeAsString(code);
 }
@@ -195,8 +212,10 @@ Map<String, dynamic> removeFirstEntry(Map<String, dynamic> map) {
 class ReplaceEntity {
   /// Comando principal, geralmente os 2 ou 3 primeiros digitos (e.g "S1")
   final String command;
+
   /// Parametros do Widget (e.g "S1w32" => {"w": 32})
-  final Map<String, dynamic>? params; 
+  final Map<String, dynamic>? params;
+
   /// Linha do código antes da formatação.
   final String codeLine;
 
@@ -212,8 +231,10 @@ class ReplaceEntity {
   _replaceCode() {
     /// Primeira aparição na linha de código RAW.
     final s = codeLine.indexOf(command);
+
     /// Conta quantos espaços brancos tem na linha de código RAW.
     int blankSpaces = codeLine.substring(0, s).length;
+
     /// Final da linha de código, geralmente finaliza com um "("
     final e = codeLine.lastIndexOf('(');
     final FlutterWidget val = findReplaceMap[command]!;
