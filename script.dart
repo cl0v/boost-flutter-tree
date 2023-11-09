@@ -2,7 +2,7 @@ import 'dart:core';
 import 'dart:io';
 
 /// Substitui os widgets pelos correspondentes.
-
+///
 /// Mapa que armazena todos os widgets que serão encurtados => expandidos
 /// no lado das chaves, fica a forma encurtada, que geralmente segue um padão
 /// de LetrasNumeros
@@ -17,6 +17,7 @@ Map<String, FlutterWidget> findReplaceMap = {
           customValues: {0: "EdgeInsets.zero"},
         )
       }..addAll(buttonCommons)),
+  'C0': FlutterWidget("Platform.isIOS ? const CupertinoActivityIndicator() : const CircularProgressIndicator()"),
   'C1': FlutterWidget("Center"),
   'C2': FlutterWidget("Column", params: multiChildCommons),
   'C3': FlutterWidget("Container"),
